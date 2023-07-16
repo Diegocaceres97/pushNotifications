@@ -1,24 +1,24 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import OneSignal from 'onesignal-cordova-plugin';
-import OSNotification from 'onesignal-cordova-plugin/dist/OSNotification';
-import { General } from '../interfaces/general.interface';
 import { OpenedEvent } from 'onesignal-cordova-plugin/dist/models/NotificationOpened';
+import OSNotification from 'onesignal-cordova-plugin/dist/OSNotification';
+import { Storage } from '@ionic/storage-angular';
 
 @Injectable({
   providedIn: 'root'
 })
-export class PushServiceService {
+export class PushServiceService{
 
-  public mensajes: any[] = [
-    {
-      title: 'Titulo del push',
-      body: 'Este es el body del push',
-      date: new Date()
-    }
-  ]
+  public mensajes: OSNotification[] = [];
+
+  pushListener = new EventEmitter<OSNotification>();
 
 
-  constructor() { }
+  constructor(
+    private storage: Storage
+  ) {
+   // this.loadMessages();
+  }
 
   OneSignalInit(): void {
     const self = this;
@@ -43,19 +43,35 @@ export class PushServiceService {
     });
   }
 
-  getNotification(notification: OSNotification) {
-    if(this.mensajes.length <= 1){
-      this.mensajes.unshift(notification);
-      return;
-    }
+  async getNotification(notification: OSNotification) {
 
-    const existPush = this.mensajes.find( mensaje => mensaje.androidNotificationId === notification.androidNotificationId)
+    await this.loadMessages();
+
+
+    const existPush = this.mensajes?.find( mensaje => mensaje.androidNotificationId === notification.androidNotificationId)
 
     if(existPush){
       return;
     }
 
     this.mensajes.unshift(notification);
+    this.pushListener.emit(notification);
 
+    this.saveMessages();
+  }
+
+  async getMessages() {
+    await this.loadMessages();
+    return [...this.mensajes];
+  }
+
+
+  async saveMessages(){
+    console.log('entro en save2')
+   await this.storage.set('mensajes', this.mensajes)
+  }
+
+  async loadMessages() {
+    this.mensajes = await this.storage?.get('mensajes') ?? [];
   }
 }

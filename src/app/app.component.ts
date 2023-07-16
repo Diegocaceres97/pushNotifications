@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PushServiceService } from './services/push-service.service';
+import { Storage } from '@ionic/storage-angular';
 
 @Component({
   selector: 'app-root',
@@ -7,14 +8,15 @@ import { PushServiceService } from './services/push-service.service';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent implements OnInit {
-
   constructor(
-    private pushServiceService: PushServiceService
-  ){}
+    private pushServiceService: PushServiceService,
+    private storage: Storage
+  ) {
 
-  ngOnInit(): void {
-    this.pushServiceService.OneSignalInit();
   }
 
-
+  async ngOnInit() {
+    await this.storage.create();
+    this.pushServiceService.OneSignalInit();
+  }
 }

@@ -3,6 +3,12 @@
     <ion-title>
       PushApp
     </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="deleteMessage()" color="danger">
+        <ion-icon slot="icon-only" name="trash"></ion-icon>
+        Delete Messages
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

@@ -28,4 +28,9 @@ export class HomePage implements OnInit{
     this.mensajes = await this.pushServiceService.getMessages();
   }
 
+  async deleteMessage(){
+    await this.pushServiceService.deletedMessages();
+    this.mensajes = [];
+  }
+
 }

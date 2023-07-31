@@ -74,4 +74,10 @@ export class PushServiceService{
   async loadMessages() {
     this.mensajes = await this.storage?.get('mensajes') ?? [];
   }
+
+  async deletedMessages(){
+    await this.storage.clear();
+    this.mensajes = [];
+    this.saveMessages();
+  }
 }
